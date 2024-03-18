@@ -1,8 +1,6 @@
 import { createStore } from "redux";
 
-const initialState = {};
-
-const reducer = (state = initialState, action) => {
+const reducer = (state = 0, action) => {
   if (action.type === "INCREMENT") {
     return state + 1;
   }
@@ -11,5 +9,9 @@ const reducer = (state = initialState, action) => {
 };
 
 const store = createStore(reducer);
+
+console.log(store.getState());
+
+store.dispatch({ type: "INCREMENT" });
 
 console.log(store.getState());
