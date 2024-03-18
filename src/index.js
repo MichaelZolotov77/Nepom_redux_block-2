@@ -1,30 +1,54 @@
-import { createStore, combineReducers } from "redux";
+import { legacy_createStore as createStore } from "redux";
 
-const counterReducer = (state = 0, action) => {
+const counter = (state = 0, action) => {
   if (action.type === "INCREMENT") {
     return state + 1;
   }
-
-  return state;
-};
-
-const todosReducer = (state = [], action) => {
-  if (action.type === "ADD_TODO") {
-    return [...state, "Learn Redux"];
+  if (action.type === "DECREMENT") {
+    return state - 1;
   }
-
+  if (action.type === "RESET") {
+    return 0;
+  }
   return state;
 };
 
-const rootReducer = combineReducers({
-  counter: counterReducer,
-  todos: todosReducer,
-});
+const store = createStore(counter);
 
-const store = createStore(rootReducer);
+const increment = {
+  type: "INCREMENT",
+};
 
-console.log(store.getState());
+const decrement = {
+  type: "DECREMENT",
+};
 
-store.dispatch({ type: "INCREMENT" });
+const reset = {
+  type: "RESET",
+};
 
-console.log(store.getState());
+const count = document.createElement("div");
+count.innerText = store.getState();
+count.id = "count";
+document.body.append(count);
+
+const decBtn = document.createElement("button");
+decBtn.innerText = "-";
+decBtn.onclick = () => store.dispatch(decrement);
+document.body.append(decBtn);
+
+const incBtn = document.createElement("button");
+incBtn.innerText = "+";
+incBtn.onclick = () => store.dispatch(increment);
+document.body.append(incBtn);
+
+const resetBtn = document.createElement("button");
+resetBtn.innerText = "reset";
+resetBtn.onclick = () => store.dispatch(reset);
+document.body.append(resetBtn);
+
+const render = () => {
+  document.getElementById("count").innerText = store.getState();
+};
+
+store.subscribe(render);
