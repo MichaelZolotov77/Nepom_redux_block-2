@@ -1,54 +1,52 @@
 import { legacy_createStore as createStore } from "redux";
 
-const counter = (state = 0, action) => {
-  if (action.type === "INCREMENT") {
-    return state + 1;
+let nextTodoId = 0;
+
+const todos = (state = [], action) => {
+  switch (action.type) {
+    case "ADD_TODO": {
+      return [
+        ...state,
+        {
+          id: ++nextTodoId,
+          title: action.title,
+          completed: false,
+        },
+      ];
+    }
+    case "TOGGLE_TODO": {
+      return state.map((todo) =>
+        todo.id === action.todoId
+          ? { ...todo, completed: !todo.completed }
+          : todo
+      );
+    }
+    default: {
+      return state;
+    }
   }
-  if (action.type === "DECREMENT") {
-    return state - 1;
-  }
-  if (action.type === "RESET") {
-    return 0;
-  }
-  return state;
 };
 
-const store = createStore(counter);
+const store = createStore(todos);
 
-const increment = {
-  type: "INCREMENT",
-};
+// action creators
+const addTodo = (title) => ({
+  type: "ADD_TODO",
+  title,
+});
 
-const decrement = {
-  type: "DECREMENT",
-};
+const toggleTodo = (todoId) => ({
+  type: "TOGGLE_TODO",
+  todoId,
+});
 
-const reset = {
-  type: "RESET",
-};
+console.log(store.getState());
 
-const count = document.createElement("div");
-count.innerText = store.getState();
-count.id = "count";
-document.body.append(count);
+store.dispatch(addTodo("Learn React"));
+console.log(store.getState());
 
-const decBtn = document.createElement("button");
-decBtn.innerText = "-";
-decBtn.onclick = () => store.dispatch(decrement);
-document.body.append(decBtn);
+store.dispatch(addTodo("Learn Redux"));
+console.log(store.getState());
 
-const incBtn = document.createElement("button");
-incBtn.innerText = "+";
-incBtn.onclick = () => store.dispatch(increment);
-document.body.append(incBtn);
-
-const resetBtn = document.createElement("button");
-resetBtn.innerText = "reset";
-resetBtn.onclick = () => store.dispatch(reset);
-document.body.append(resetBtn);
-
-const render = () => {
-  document.getElementById("count").innerText = store.getState();
-};
-
-store.subscribe(render);
+store.dispatch(toggleTodo(1));
+console.log(store.getState());
